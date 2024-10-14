@@ -495,7 +495,8 @@ class LoadImagesAndLabels(Dataset):
         self.stride = stride
         self.path = path
         self.albumentations = Albumentations(size=img_size) if augment else None
-
+        self.folder = os.path.dirname(path) 
+        
         try:
             f = []  # image files
             for p in path if isinstance(path, list) else [path]:
@@ -507,7 +508,9 @@ class LoadImagesAndLabels(Dataset):
                     with open(p) as t:
                         t = t.read().strip().splitlines()
                         parent = str(p.parent) + os.sep
-                        f += [x.replace("./", parent, 1) if x.startswith("./") else x for x in t]  # to global path
+                        # f += [x.replace('./', parent, 1) if x.startswith('./') else x for x in t]  # to global path
+                        f += [os.path.join(self.folder,x) for x in t]  # to global path                        
+                        # f += [x.replace("./", parent, 1) if x.startswith("./") else x for x in t]  # to global path
                         # f += [p.parent / x.lstrip(os.sep) for x in t]  # to global path (pathlib)
                 else:
                     raise FileNotFoundError(f"{prefix}{p} does not exist")
